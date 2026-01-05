@@ -1,15 +1,20 @@
 const std = @import("std");
-const home = @import("src/homescreen.zig");
-const term = @import("src/term.zig");
+const box = @import("src/flexBox.zig");
+const term = @import("src/termHelper.zig");
 
 pub fn main() !void {
     var buf: [4096]u8 = undefined;
     var writer = std.fs.File.stdout().writer(&buf);
     const stdout = &writer.interface;
+    
+    
+    try term.enterAltScreen(stdout);
+    defer term.exitAltScreen(stdout) catch {};
 
-    try home.printSquare(stdout);
-
+    try box.printSquare(stdout);
     try stdout.flush();
+    std.Thread.sleep(2 * std.time.ns_per_s);
+    
 }
 
 

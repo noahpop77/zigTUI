@@ -1,5 +1,5 @@
 const std = @import("std");
-const term = @import("term.zig");
+const termSize = @import("termSize.zig");
 pub const Range = struct {
     start: u16,
     end: u16,
@@ -19,25 +19,29 @@ pub fn getCenterHeight(height: u16) Range {
     const shift = height / 4;
     const rangeStart = shift;
     const rangeEnd = height + shift - gap;
-    std.debug.print("Height: {d}\nGap: {d}\nRange: {d} to {d}\n", .{height, gap, rangeStart, rangeEnd});
+    // std.debug.print("Height: {d}\nGap: {d}\nRange: {d} to {d}\n", .{height, gap, rangeStart, rangeEnd});
     return Range{ .start = rangeStart, .end = rangeEnd, .length = gap};
 }
 
-fn writeRepeated(writer: *std.io.Writer, s: []const u8, count: usize) !void {
-    for (0..count) |_| {
-        try writer.writeAll(s);
+pub fn heightPadding(range: Range, writer: *std.Io.Writer) !void {
+    for (0..(range.length/2)-1) |_| {
+        try writer.print("\n", .{});
     }
+
 }
 
 pub fn printSquare(stdout: *std.Io.Writer) !void {
 
-    const size = (try  term.termSize(std.fs.File.stdout())).?;
+    const size = (try  termSize.termSize(std.fs.File.stdout())).?;
     const termWidth: Range = getCenterWidth(size.width);
     const termHeight: Range = getCenterHeight(size.height);
 
+    try heightPadding(termHeight, stdout);
     try printHorizBar(termWidth, stdout);
     try printSideBars(termWidth, termHeight, stdout);
     try printHorizBar(termWidth, stdout);
+    try heightPadding(termHeight, stdout);
+    try stdout.flush();
 }
 
 pub fn printSideBars(width: Range, height: Range ,writer: *std.Io.Writer) !void {
@@ -60,15 +64,12 @@ pub fn printHorizBar(range: Range, writer: *std.Io.Writer) !void {
     try writer.print("\n", .{});
 }
 
-// WriteRepeatedColoredHex accepts a writer (usually something like below).
-//     var buf: [4096]u8 = undefined;
-//     var writer = std.fs.File.stdout().writer(&buf);
-//     var writer = createWriter(&buf);
-//     const stdout = &writer.interface;
-//  inStr: accepts a string that will be repeated (usually a single character)
-//  colorHex: Is the hex color code the characters will be. Usually in the format
-//      of 0x{colorcode} Ex. 0x53159 to produce purple
-//  count: Amount of times to repeat string
+fn writeRepeated(writer: *std.io.Writer, s: []const u8, count: usize) !void {
+    for (0..count) |_| {
+        try writer.writeAll(s);
+    }
+}
+
 pub fn writeRepeatedColoredHex(
     writer: *std.io.Writer,
     inStr: []const u8,
