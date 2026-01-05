@@ -2,21 +2,14 @@ const std = @import("std");
 const home = @import("src/homescreen.zig");
 const term = @import("src/term.zig");
 
-pub fn createWriter(buf: []u8) std.fs.File.Writer {
-    return std.fs.File.stdout().writer(buf);
-}
-
 pub fn main() !void {
     var buf: [4096]u8 = undefined;
-    var writer = createWriter(&buf);
+    var writer = std.fs.File.stdout().writer(&buf);
     const stdout = &writer.interface;
 
-    const size = (try  term.termSize(std.fs.File.stdout())).?;
-    const termWidth: home.Range = home.getCenterWidth(size.width);
+    try home.printSquare(stdout);
 
-    try home.printHorizBar(termWidth, stdout);
-    
-    try stdout.flush();   // or writer.flush()
+    try stdout.flush();
 }
 
 
