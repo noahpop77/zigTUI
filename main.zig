@@ -1,6 +1,6 @@
 const std = @import("std");
-const home = @import("homescreen.zig");
-const term = @import("term.zig");
+const home = @import("src/homescreen.zig");
+const term = @import("src/term.zig");
 
 pub fn createWriter(buf: []u8) std.fs.File.Writer {
     return std.fs.File.stdout().writer(buf);
