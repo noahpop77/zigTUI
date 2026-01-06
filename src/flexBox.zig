@@ -1,4 +1,5 @@
 const std = @import("std");
+const term = @import("termHelper.zig");
 const termSize = @import("termSize.zig");
 pub const Range = struct {
     start: u16,
@@ -31,7 +32,8 @@ pub fn heightPadding(range: Range, writer: *std.Io.Writer) !void {
 }
 
 pub fn printSquare(stdout: *std.Io.Writer) !void {
-
+    // try term.enterAltScreen(stdout);
+    // defer term.exitAltScreen(stdout) catch {};
     const size = (try  termSize.termSize(std.fs.File.stdout())).?;
     const termWidth: Range = getCenterWidth(size.width);
     const termHeight: Range = getCenterHeight(size.height);
@@ -42,6 +44,7 @@ pub fn printSquare(stdout: *std.Io.Writer) !void {
     try printHorizBar(termWidth, stdout);
     try heightPadding(termHeight, stdout);
     try stdout.flush();
+    
 }
 
 pub fn printSideBars(width: Range, height: Range ,writer: *std.Io.Writer) !void {
