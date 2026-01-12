@@ -7,19 +7,14 @@ pub fn main() !void {
     var writer = std.fs.File.stdout().writer(&buf);
     const stdout = &writer.interface;
 
-
-    try term.enterAltScreen(stdout);
-    defer term.exitAltScreen(stdout) catch {};
+    try stdout.print("bob\n", .{});
 
     try box.printSquare(stdout);
-    // try stdout.flush();
     
-    try term.userIn();
+    try stdout.print("BOBBY\n", .{});
+    try stdout.flush();
 
 }
-
-
-
 
 
 

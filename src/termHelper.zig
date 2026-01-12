@@ -24,7 +24,6 @@ pub fn exitAltScreen(writer: *std.Io.Writer) !void {
 }
 
 
-
 var orig_termios: c.struct_termios = undefined;
 
 pub fn enableRawMode() !void {
@@ -70,7 +69,7 @@ pub fn userIn() !void {
                 break; // exit immediately
             }
             // print non‑q keys if you want
-            std.debug.print("Got: {c}\n", .{byte});
+            // std.debug.print("Got: {c}\n", .{byte});
         } else |err| switch (err) {
             error.EndOfStream => break,
             else => return err,

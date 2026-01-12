@@ -7,11 +7,14 @@ pub const Range = struct {
     length: u16,
 };
 
+const DEEP_PURPLE = 0x531599;
+
 pub fn getCenterWidth(width: u16) Range {
     const gap = width/2;
     const shift = width / 4;
     const rangeStart = shift;
     const rangeEnd = width + shift - gap;
+    std.debug.print("Height: {d}\nGap: {d}\nRange: {d} to {d}\n", .{width, gap, rangeStart, rangeEnd});
     return Range{ .start = rangeStart, .end = rangeEnd, .length = gap};
 }
 
@@ -20,7 +23,7 @@ pub fn getCenterHeight(height: u16) Range {
     const shift = height / 4;
     const rangeStart = shift;
     const rangeEnd = height + shift - gap;
-    // std.debug.print("Height: {d}\nGap: {d}\nRange: {d} to {d}\n", .{height, gap, rangeStart, rangeEnd});
+    std.debug.print("Height: {d}\nGap: {d}\nRange: {d} to {d}\n", .{height, gap, rangeStart, rangeEnd});
     return Range{ .start = rangeStart, .end = rangeEnd, .length = gap};
 }
 
@@ -32,8 +35,9 @@ pub fn heightPadding(range: Range, writer: *std.Io.Writer) !void {
 }
 
 pub fn printSquare(stdout: *std.Io.Writer) !void {
-    // try term.enterAltScreen(stdout);
-    // defer term.exitAltScreen(stdout) catch {};
+    try term.enterAltScreen(stdout);
+    defer term.exitAltScreen(stdout) catch {};
+    
     const size = (try  termSize.termSize(std.fs.File.stdout())).?;
     const termWidth: Range = getCenterWidth(size.width);
     const termHeight: Range = getCenterHeight(size.height);
@@ -43,18 +47,19 @@ pub fn printSquare(stdout: *std.Io.Writer) !void {
     try printSideBars(termWidth, termHeight, stdout);
     try printHorizBar(termWidth, stdout);
     try heightPadding(termHeight, stdout);
-    try stdout.flush();
     
+    try stdout.flush();
+    try term.userIn();
 }
 
 pub fn printSideBars(width: Range, height: Range ,writer: *std.Io.Writer) !void {
     for (0..height.length) |_| {
         try writeRepeated(writer, " ", (width.length/2) - 0);
-        try writeRepeatedColoredHex(writer, "█", 0x531599, 1);
-        try writeRepeatedColoredHex(writer, "█", 0x531599, 1);
+        try writeRepeatedColoredHex(writer, "█", DEEP_PURPLE, 1);
+        try writeRepeatedColoredHex(writer, "█", DEEP_PURPLE, 1);
         try writeRepeated(writer, " ", width.length - 4);
-        try writeRepeatedColoredHex(writer, "█", 0x531599, 1);
-        try writeRepeatedColoredHex(writer, "█", 0x531599, 1);
+        try writeRepeatedColoredHex(writer, "█", DEEP_PURPLE, 1);
+        try writeRepeatedColoredHex(writer, "█", DEEP_PURPLE, 1);
         try writeRepeated(writer, " ", (width.length/2)-1);
         try writer.print("\n", .{});
     }
@@ -62,7 +67,7 @@ pub fn printSideBars(width: Range, height: Range ,writer: *std.Io.Writer) !void 
 
 pub fn printHorizBar(range: Range, writer: *std.Io.Writer) !void {
     try writeRepeated(writer, " ", range.length/2);
-    try writeRepeatedColoredHex(writer, "█", 0x531599, range.length);
+    try writeRepeatedColoredHex(writer, "█", DEEP_PURPLE, range.length);
     try writeRepeated(writer, " ", range.length/2);
     try writer.print("\n", .{});
 }
