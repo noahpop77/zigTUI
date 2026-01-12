@@ -19,7 +19,8 @@ pub fn enterAltScreen(writer: *std.Io.Writer) !void {
 }
 
 pub fn exitAltScreen(writer: *std.Io.Writer) !void {
-    try writer.print("\x1b[?1049l", .{});   // disable alt screen
+    try writer.print("\x1b[?25h", .{});     // Ansii code for Enables cursor
+    try writer.print("\x1b[?1049l", .{});   // Ansii code for disable alt screen
     try writer.flush();
 }
 
